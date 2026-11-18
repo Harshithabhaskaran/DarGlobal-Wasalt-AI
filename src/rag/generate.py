@@ -15,8 +15,22 @@ PROJECT_ROOT = os.path.abspath(
 
 load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
-API_KEY = os.getenv("OPENROUTER_API_KEY")
-MODEL = os.getenv("OPENROUTER_MODEL", "openrouter/free")
+def get_config_value(name, default=None):
+    """Read configuration from environment variables or Streamlit secrets."""
+    value = os.getenv(name)
+
+    if value:
+        return value
+
+    try:
+        import streamlit as st
+        return st.secrets[name]
+    except Exception:
+        return default
+
+
+API_KEY = get_config_value("OPENROUTER_API_KEY")
+MODEL = get_config_value("OPENROUTER_MODEL", "openrouter/free")
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
